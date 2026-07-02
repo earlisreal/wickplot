@@ -23,9 +23,9 @@ import kotlin.test.assertTrue
 
 /**
  * Not a unit test in the strict sense — it's the screenshot harness for the Canvas chart. It renders
- * the real [drawCandlestickChart] output (dark + light) to PNGs under docs/spikes/ so the sample can
- * be eyeballed without launching a headed run. Kept as a @Test so it runs via
- * `./gradlew :chart-canvas:jvmTest --tests "*CanvasChartSampleRenderTest"`.
+ * the real [drawCandlestickChart] output (dark + light) to PNGs under build/samples/ so the sample
+ * can be eyeballed without launching a headed run. Kept as a @Test so it runs via
+ * `./gradlew jvmTest --tests "*CanvasChartSampleRenderTest"`.
  */
 class CanvasChartSampleRenderTest {
 
@@ -42,7 +42,7 @@ class CanvasChartSampleRenderTest {
         // Free-floating crosshair: an arbitrary cursor pixel inside the plot (scaled DrawScope space).
         val crosshair = Offset(1500f, 500f)
 
-        val outDir = File("../docs/spikes/canvas-chart").apply { mkdirs() }
+        val outDir = File("build/samples").apply { mkdirs() }
         val dark = renderPng(1100, 620, scale = 2f) {
             drawCandlestickChart(bars, markers, viewport, ChartColors.Dark, it, "ACME · D", crosshair)
         }
