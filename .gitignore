@@ -4,3 +4,6 @@ local.properties
 *.log
 .idea/
 .kotlin/
+
+# Local notes/plans — not part of the published repo:
+docs/
