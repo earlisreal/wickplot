@@ -48,8 +48,8 @@ mavenPublishing {
         name.set("wickplot")
         description.set(
             "Candlestick / trading charts for Compose Multiplatform, drawn natively on a Compose " +
-                "Canvas — candles, volume, VWAP overlay, trade entry/exit markers, crosshair, and " +
-                "pan/zoom. No WebView, no JS bridge."
+                "Canvas — candles, volume, indicator line overlays, trade entry/exit markers, " +
+                "crosshair, and pan/zoom. No WebView, no JS bridge."
         )
         inceptionYear.set("2026")
         url.set("https://github.com/earlisreal/wickplot")

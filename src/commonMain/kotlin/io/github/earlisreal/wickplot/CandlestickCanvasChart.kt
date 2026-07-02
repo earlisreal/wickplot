@@ -28,7 +28,7 @@ fun CandlestickCanvasChart(
     title: String,
     modifier: Modifier = Modifier,
     colors: ChartColors = ChartColors.Dark,
-    vwap: List<LinePoint> = emptyList(),
+    overlays: List<LineOverlay> = emptyList(),
     intraday: Boolean = false,
     initialWindow: BarWindow = BarWindow.initial(bars.size),
 ) {
@@ -73,6 +73,6 @@ fun CandlestickCanvasChart(
             },
     ) {
         val viewport = ChartViewport.fit(bars, window)
-        drawCandlestickChart(bars, markers, viewport, colors, textMeasurer, title, crosshair, vwap, intraday)
+        drawCandlestickChart(bars, markers, viewport, colors, textMeasurer, title, crosshair, overlays, intraday)
     }
 }

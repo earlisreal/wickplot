@@ -19,7 +19,8 @@ data class ChartColors(
     val legendText: Color,
     val buyMarker: Color,
     val sellMarker: Color,
-    val vwap: Color,
+    /** Default colour for [LineOverlay]s that don't set their own. */
+    val overlay: Color,
 ) {
     companion object {
         /** Reasonable dark palette so the chart is usable with zero configuration. */
@@ -35,7 +36,7 @@ data class ChartColors(
             legendText = Color(0xFFE6E9EF),
             buyMarker = Color(0xFFA5D6A7),
             sellMarker = Color(0xFFF48FB1),
-            vwap = Color(0xFF3FB950),
+            overlay = Color(0xFF3FB950),
         )
 
         /** Reasonable light palette so the chart is usable with zero configuration. */
@@ -51,7 +52,7 @@ data class ChartColors(
             legendText = Color(0xFF1B1F2A),
             buyMarker = Color(0xFFA5D6A7),
             sellMarker = Color(0xFFF48FB1),
-            vwap = Color(0xFF16A34A),
+            overlay = Color(0xFF16A34A),
         )
     }
 }

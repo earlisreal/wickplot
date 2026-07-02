@@ -45,7 +45,7 @@ fun DrawScope.drawCandlestickChart(
     textMeasurer: TextMeasurer,
     title: String,
     crosshair: Offset? = null,
-    vwap: List<LinePoint> = emptyList(),
+    overlays: List<LineOverlay> = emptyList(),
     intraday: Boolean = false,
 ) {
     drawRect(colors.background, size = size)
@@ -117,21 +117,24 @@ fun DrawScope.drawCandlestickChart(
         drawRect(col, topLeft = Offset(x - bodyW / 2f, top), size = Size(bodyW, (bot - top).coerceAtLeast(1f)))
     }
 
-    // ── VWAP overlay (clipped to the plot so it never paints over the axis) ──
-    if (vwap.isNotEmpty()) {
+    // ── Line overlays (clipped to the plot so they never paint over the axis) ──
+    if (overlays.isNotEmpty()) {
         clipRect(left = plotLeft, top = plotTop, right = plotLeft + plotWidth, bottom = plotBottom) {
-            var prev: LinePoint? = null
-            for (p in vwap) {
-                val a = prev
-                if (a != null && (a.barIndex in start until end || p.barIndex in start until end)) {
-                    drawLine(
-                        colors.vwap,
-                        Offset(viewport.xCenter(a.barIndex, plotLeft, plotWidth), viewport.priceToY(a.value, plotTop, plotHeight)),
-                        Offset(viewport.xCenter(p.barIndex, plotLeft, plotWidth), viewport.priceToY(p.value, plotTop, plotHeight)),
-                        strokeWidth = 1.5f,
-                    )
+            for (overlay in overlays) {
+                val col = overlay.color ?: colors.overlay
+                var prev: LinePoint? = null
+                for (p in overlay.points) {
+                    val a = prev
+                    if (a != null && (a.barIndex in start until end || p.barIndex in start until end)) {
+                        drawLine(
+                            col,
+                            Offset(viewport.xCenter(a.barIndex, plotLeft, plotWidth), viewport.priceToY(a.value, plotTop, plotHeight)),
+                            Offset(viewport.xCenter(p.barIndex, plotLeft, plotWidth), viewport.priceToY(p.value, plotTop, plotHeight)),
+                            strokeWidth = overlay.strokeWidth,
+                        )
+                    }
+                    prev = p
                 }
-                prev = p
             }
         }
     }
@@ -173,11 +176,17 @@ fun DrawScope.drawCandlestickChart(
         drawText(tag, topLeft = Offset(plotLeft + plotWidth + 4.dp.toPx(), y - tag.size.height / 2f))
     }
 
-    val vwapAtCrosshair = crosshairBar?.let { cb -> vwap.firstOrNull { it.barIndex == cb }?.value }
-    drawLegend(textMeasurer, colors, title, crosshairBar?.let { bars.getOrNull(it) }, vwapAtCrosshair)
+    val legendEntries = crosshairBar?.let { overlayLegendEntries(overlays, it) } ?: emptyList()
+    drawLegend(textMeasurer, colors, title, crosshairBar?.let { bars.getOrNull(it) }, legendEntries)
 }
 
-private fun DrawScope.drawLegend(tm: TextMeasurer, colors: ChartColors, title: String, bar: Candle?, vwapValue: Double?) {
+private fun DrawScope.drawLegend(
+    tm: TextMeasurer,
+    colors: ChartColors,
+    title: String,
+    bar: Candle?,
+    overlayEntries: List<Pair<LineOverlay, Double>>,
+) {
     val titleStyle = TextStyle(color = colors.legendText, fontSize = 12.sp, fontWeight = FontWeight.Medium)
     val lineStyle = TextStyle(color = colors.legendText, fontSize = 11.sp)
     val lines = buildList {
@@ -187,7 +196,9 @@ private fun DrawScope.drawLegend(tm: TextMeasurer, colors: ChartColors, title: S
             add(tm.measure("O ${fmt2(bar.open)}  H ${fmt2(bar.high)}  L ${fmt2(bar.low)}  C ${fmt2(bar.close)}", lineStyle.copy(color = col)))
             add(tm.measure("Vol ${compactVol(bar.volume)}", lineStyle))
         }
-        if (vwapValue != null) add(tm.measure("VWAP ${fmt2(vwapValue)}", lineStyle.copy(color = colors.vwap)))
+        for ((overlay, value) in overlayEntries) {
+            add(tm.measure("${overlay.label} ${fmt2(value)}", lineStyle.copy(color = overlay.color ?: colors.overlay)))
+        }
     }
     val pad = 8.dp.toPx()
     val gap = 2.dp.toPx()

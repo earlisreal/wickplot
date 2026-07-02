@@ -52,9 +52,9 @@ class CanvasChartSampleRenderTest {
         File(outDir, "sample-dark.png").writeBytes(dark)
         File(outDir, "sample-light.png").writeBytes(light)
 
-        // Intraday variant exercising the VWAP overlay + HH:MM time axis.
+        // Intraday variant exercising a labeled line overlay (VWAP) + HH:MM time axis.
         val minuteBars = minuteSampleBars()
-        val vwap = vwapLineFor(minuteBars)
+        val vwap = LineOverlay(points = vwapLineFor(minuteBars), label = "VWAP")
         val ivWindow = BarWindow.initial(minuteBars.size, maxBars = 120)
         val ivViewport = ChartViewport.fit(minuteBars, ivWindow)
         val ivMarkers = listOf(
@@ -62,7 +62,7 @@ class CanvasChartSampleRenderTest {
             PriceMarker(barIndex = 92, price = minuteBars[92].high, isBuy = false),
         )
         val intraday = renderPng(1100, 620, scale = 2f) {
-            drawCandlestickChart(minuteBars, ivMarkers, ivViewport, ChartColors.Dark, it, "ACME · 1m", Offset(1200f, 600f), vwap, true)
+            drawCandlestickChart(minuteBars, ivMarkers, ivViewport, ChartColors.Dark, it, "ACME · 1m", Offset(1200f, 600f), listOf(vwap), true)
         }
         File(outDir, "sample-intraday-vwap.png").writeBytes(intraday)
 

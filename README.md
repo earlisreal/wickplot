@@ -11,13 +11,18 @@ Candlestick / trading charts for **Compose Multiplatform**, drawn directly on a 
 
 - Candlesticks + volume band from any `List<Candle>` — implement the small `Candle` interface on
   your own bar type (zero-copy), or use the bundled `OhlcvCandle`
-- VWAP overlay (`vwap: List<LinePoint>`)
+- Line overlays for host-computed indicators — VWAP, moving averages, band edges
+  (`overlays: List<LineOverlay>`; per-line colour, stroke width, and optional legend label)
 - Exact-price trade entry/exit markers (`PriceMarker` diamonds)
 - Crosshair with OHLCV legend, price axis, adaptive time axis (intraday `HH:MM` / daily `MM-DD`)
 - Cursor-anchored scroll zoom and drag pan, clamped to the data
 - `ChartColors.Dark` / `ChartColors.Light` presets, fully customizable
 - Trade-centric initial framing via `ChartInitialView` (calendar or intraday modes)
 - Pure, unit-tested pan/zoom/viewport math; the renderer is exercised by a Skia screenshot harness
+
+wickplot renders what you give it — the Lightweight-Charts philosophy. Indicator *values* (VWAP,
+moving averages, …) are computed by your app and passed in as plain `LineOverlay`s; the library
+never computes market math.
 
 Targets: **JVM/Desktop, iOS (arm64, simulatorArm64), wasmJs**. License: Apache-2.0.
 
@@ -42,7 +47,9 @@ CandlestickCanvasChart(
     markers = listOf(PriceMarker(barIndex = 12, price = 101.25, isBuy = true)),
     title = "ACME · D",
     colors = ChartColors.Dark,   // or ChartColors.Light
-    vwap = emptyList(),          // optional overlay, List<LinePoint>
+    overlays = listOf(           // indicator lines your app computed — LineOverlay(points, label, color, strokeWidth)
+        LineOverlay(points = listOf(LinePoint(barIndex = 0, value = 101.0) /* ... */), label = "VWAP"),
+    ),
     intraday = false,            // switches the time-axis format
 )
 ```
@@ -56,13 +63,12 @@ Light theme:
 ## Why not Vico?
 
 Vico is a great general-purpose Compose chart engine and has a candlestick layer, but no built-in
-trading overlays. wickplot is purpose-built for trade analysis: volume, VWAP, and exact-price trade
-markers out of the box, with indicator panes on the roadmap.
+trading overlays. wickplot is purpose-built for trade analysis: volume, indicator line overlays,
+and exact-price trade markers out of the box, with indicator panes on the roadmap.
 
 ## Roadmap
 
-- Moving-average overlays (SMA / EMA / WMA / Bollinger)
-- RSI & MACD sub-panes (stacked panes sharing the X axis)
+- Stacked sub-panes sharing the X axis (for host-computed RSI / MACD / volume studies)
 - Android target
 
 ## License
