@@ -47,9 +47,7 @@ CandlestickCanvasChart(
     markers = listOf(PriceMarker(barIndex = 12, price = 101.25, isBuy = true)),
     title = "ACME · D",
     colors = ChartColors.Dark,   // or ChartColors.Light
-    overlays = listOf(           // indicator lines your app computed — LineOverlay(points, label, color, strokeWidth)
-        LineOverlay(points = listOf(LinePoint(barIndex = 0, value = 101.0) /* ... */), label = "VWAP"),
-    ),
+    overlays = emptyList(),      // indicator lines — see "Drawing indicators" below
     intraday = false,            // switches the time-axis format
 )
 ```
@@ -59,6 +57,48 @@ Drag to pan, scroll to zoom (anchored at the cursor), hover for a crosshair with
 Light theme:
 
 ![wickplot light sample](https://github.com/user-attachments/assets/ea669e22-db90-4942-a836-e728928595db)
+
+## Drawing indicators
+
+Your app computes the values, wickplot draws the lines: anything of shape
+`List<Candle> → List<LinePoint>` plugs straight into `overlays`.
+
+```kotlin
+// A simple moving average — a few lines of your code.
+fun sma(bars: List<Candle>, period: Int): List<LinePoint> =
+    ((period - 1) until bars.size).map { i ->
+        LinePoint(barIndex = i, value = ((i - period + 1)..i).sumOf { bars[it].close } / period)
+    }
+
+// Session VWAP: cumulative typical price × volume, reset at each new trading day.
+fun sessionVwap(bars: List<Candle>): List<LinePoint> {
+    var tpv = 0.0
+    var vol = 0.0
+    var day: LocalDate? = null
+    return bars.mapIndexedNotNull { i, b ->
+        if (b.timestamp.date != day) { tpv = 0.0; vol = 0.0; day = b.timestamp.date }
+        tpv += (b.high + b.low + b.close) / 3.0 * b.volume
+        vol += b.volume
+        if (vol > 0.0) LinePoint(barIndex = i, value = tpv / vol) else null
+    }
+}
+
+CandlestickCanvasChart(
+    bars = bars,
+    markers = emptyList(),
+    title = "ACME · 1m",
+    overlays = listOf(
+        LineOverlay(points = sessionVwap(bars), label = "VWAP"),          // no color → ChartColors.overlay
+        LineOverlay(points = sma(bars, 20), label = "SMA 20", color = Color(0xFF64B5F6)),
+        LineOverlay(points = sma(bars, 50), color = Color(0xFFFFB74D), strokeWidth = 2f),
+    ),
+    intraday = true,
+)
+```
+
+Overlays with a `label` show their value at the hovered bar in the crosshair legend, in the
+overlay's colour; unlabeled overlays are drawn but stay out of the legend. Multi-line indicators
+(Bollinger, Keltner) are just several overlays — one per band edge.
 
 ## Why not Vico?
 
