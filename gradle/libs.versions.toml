@@ -3,9 +3,9 @@
 kotlin = "2.4.0"
 composeMultiplatform = "1.11.1"
 kotlinx-datetime = "0.7.1"
-# Latest stable, verified against search.maven.org on 2026-07-02:
-mavenPublish = "0.33.0"
-dokka = "2.0.0"
+# Latest stable, verified against repo1.maven.org maven-metadata.xml on 2026-07-02:
+mavenPublish = "0.37.0"
+dokka = "2.2.0"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
