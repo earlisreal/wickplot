@@ -48,6 +48,23 @@ data class BarWindow(val startIndex: Int, val visibleBars: Int) {
     }
 }
 
+/** Result of [accumulatePan]: whole [bars] to pan now plus the sub-bar [remainder] to carry forward. */
+data class PanDelta(val bars: Int, val remainder: Float)
+
+/**
+ * Convert one drag event into whole bars to pan, carrying sub-bar movement across events. Drag
+ * events arrive a few pixels at a time; rounding each one to bars independently discards any
+ * movement smaller than a slot, which makes slow drags do nothing. Feed the previous [remainder]
+ * back in on every event so slow movement accumulates: dragging right ([dragPx] > 0) pans toward
+ * earlier bars (negative [PanDelta.bars]), matching [BarWindow.pan]'s sign convention.
+ */
+fun accumulatePan(remainder: Float, dragPx: Float, slotPx: Float): PanDelta {
+    if (slotPx <= 0f) return PanDelta(0, remainder)
+    val totalBars = remainder - dragPx / slotPx
+    val wholeBars = totalBars.toInt() // truncate toward zero; the fraction is carried forward
+    return PanDelta(wholeBars, totalBars - wholeBars)
+}
+
 /**
  * A resolved view: the visible bar window plus the price/volume scales derived from those bars,
  * and the pure pixel-mapping functions the renderer uses. Given a plot rectangle it converts

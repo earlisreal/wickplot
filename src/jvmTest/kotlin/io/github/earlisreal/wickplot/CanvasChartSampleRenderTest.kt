@@ -9,15 +9,9 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.font.createFontFamilyResolver
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.plus
 import org.jetbrains.skia.EncodedImageFormat
 import org.jetbrains.skia.Surface
 import java.io.File
-import java.util.Random
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -69,56 +63,6 @@ class CanvasChartSampleRenderTest {
         assertTrue(dark.size > 1000, "dark PNG should have real content")
         assertTrue(light.size > 1000, "light PNG should have real content")
         assertTrue(intraday.size > 1000, "intraday PNG should have real content")
-    }
-
-    /** Deterministic random-walk daily OHLCV so the sample is stable across runs. */
-    private fun sampleBars(): List<OhlcvCandle> {
-        val rnd = Random(42)
-        val bars = ArrayList<OhlcvCandle>(160)
-        var price = 100.0
-        var date = LocalDate(2025, 6, 2)
-        repeat(160) {
-            val open = price
-            val close = (open + (rnd.nextDouble() - 0.47) * 3.0).coerceAtLeast(5.0)
-            val high = maxOf(open, close) + rnd.nextDouble() * 1.8
-            val low = (minOf(open, close) - rnd.nextDouble() * 1.8).coerceAtLeast(1.0)
-            val volume = (600_000 + rnd.nextInt(2_200_000)).toLong()
-            bars.add(OhlcvCandle(LocalDateTime(date, LocalTime(0, 0)), open, high, low, close, volume))
-            price = close
-            date = date.plus(DatePeriod(days = 1))
-        }
-        return bars
-    }
-
-    /** Deterministic one-minute bars starting 09:30, for the intraday sample. */
-    private fun minuteSampleBars(): List<OhlcvCandle> {
-        val rnd = Random(7)
-        val bars = ArrayList<OhlcvCandle>(180)
-        var price = 50.0
-        val day = LocalDate(2025, 6, 2)
-        repeat(180) { i ->
-            val open = price
-            val close = (open + (rnd.nextDouble() - 0.48) * 0.6).coerceAtLeast(1.0)
-            val high = maxOf(open, close) + rnd.nextDouble() * 0.35
-            val low = (minOf(open, close) - rnd.nextDouble() * 0.35).coerceAtLeast(0.5)
-            val volume = (40_000 + rnd.nextInt(180_000)).toLong()
-            val t = LocalTime(9 + (30 + i) / 60, (30 + i) % 60)
-            bars.add(OhlcvCandle(LocalDateTime(day, t), open, high, low, close, volume))
-            price = close
-        }
-        return bars
-    }
-
-    /** Cumulative typical-price VWAP, one point per bar. */
-    private fun vwapLineFor(bars: List<OhlcvCandle>): List<LinePoint> {
-        var tpv = 0.0
-        var vol = 0.0
-        return bars.mapIndexed { i, b ->
-            val typical = (b.high + b.low + b.close) / 3.0
-            tpv += typical * b.volume
-            vol += b.volume
-            LinePoint(barIndex = i, value = if (vol > 0) tpv / vol else b.close)
-        }
     }
 
     private fun renderPng(width: Int, height: Int, scale: Float, block: DrawScope.(TextMeasurer) -> Unit): ByteArray {

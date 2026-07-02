@@ -12,7 +12,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.rememberTextMeasurer
-import kotlin.math.roundToInt
 
 /**
  * Native Compose-[Canvas] candlestick chart. Interaction: drag to pan, scroll to zoom
@@ -41,11 +40,15 @@ fun CandlestickCanvasChart(
     Canvas(
         modifier = modifier
             .pointerInput(bars) {
-                detectDragGestures { change, drag ->
+                var panRemainder = 0f
+                detectDragGestures(
+                    onDragStart = { panRemainder = 0f },
+                ) { change, drag ->
                     change.consume()
                     val plotWidth = plotWidthOf(size.width, RIGHT_AXIS_DP.toPx())
                     val slot = plotWidth / window.visibleBars.coerceAtLeast(1)
-                    val deltaBars = (-drag.x / slot).roundToInt()
+                    val (deltaBars, remainder) = accumulatePan(panRemainder, drag.x, slot)
+                    panRemainder = remainder
                     if (deltaBars != 0) window = window.pan(deltaBars, bars.size)
                 }
             }

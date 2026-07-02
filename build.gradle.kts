@@ -33,6 +33,16 @@ kotlin {
     }
 }
 
+// Interactive manual-verification window (ManualChartApp.kt in jvmTest — never ships in the
+// artifact): opens the real chart with sample data so pan/zoom/crosshair can be checked by hand.
+tasks.register<JavaExec>("runSample") {
+    group = "verification"
+    description = "Opens an interactive window with sample chart data for manual verification."
+    val jvmTestCompilation = kotlin.jvm().compilations.getByName("test")
+    classpath(jvmTestCompilation.output.allOutputs, jvmTestCompilation.runtimeDependencyFiles)
+    mainClass.set("io.github.earlisreal.wickplot.ManualChartAppKt")
+}
+
 mavenPublishing {
     // Maven Central via the Sonatype Central Portal. This configures the upload; CI's tag-triggered
     // job runs the publishAndReleaseToMavenCentral task so the deployment releases without a manual

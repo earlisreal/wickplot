@@ -72,6 +72,36 @@ class CandlestickChartMathTest {
         assertEquals(0, w.startIndex)
     }
 
+    // ── Pan accumulation ─────────────────────────────────────────────────────
+
+    @Test
+    fun `slow drag accumulates sub-bar movement across events until a whole bar is crossed`() {
+        // Slot = 8px; four slow drag events of 2px each = one full bar, not four discarded rounds.
+        var acc = accumulatePan(remainder = 0f, dragPx = 2f, slotPx = 8f)
+        assertEquals(0, acc.bars)
+        acc = accumulatePan(acc.remainder, dragPx = 2f, slotPx = 8f)
+        assertEquals(0, acc.bars)
+        acc = accumulatePan(acc.remainder, dragPx = 2f, slotPx = 8f)
+        assertEquals(0, acc.bars)
+        acc = accumulatePan(acc.remainder, dragPx = 2f, slotPx = 8f)
+        assertEquals(-1, acc.bars) // drag right = pan to earlier bars
+        assertEquals(0f, acc.remainder, 1e-6f)
+    }
+
+    @Test
+    fun `fast drag emits multiple bars and carries the sub-bar residue`() {
+        val acc = accumulatePan(remainder = 0f, dragPx = -20f, slotPx = 8f)
+        assertEquals(2, acc.bars) // drag left = pan to later bars
+        assertEquals(0.5f, acc.remainder, 1e-6f)
+    }
+
+    @Test
+    fun `accumulatePan is safe when the slot width is not positive`() {
+        val acc = accumulatePan(remainder = 0.4f, dragPx = 10f, slotPx = 0f)
+        assertEquals(0, acc.bars)
+        assertEquals(0.4f, acc.remainder, 1e-6f)
+    }
+
     // ── ChartViewport.fit ────────────────────────────────────────────────────
 
     @Test
