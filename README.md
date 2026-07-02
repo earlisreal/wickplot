@@ -30,7 +30,7 @@ Targets: **JVM/Desktop, iOS (arm64, simulatorArm64), wasmJs**. License: Apache-2
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.earlisreal:wickplot:0.1.0")
+    implementation("io.github.earlisreal:wickplot:0.1.1")
 }
 ```
 
