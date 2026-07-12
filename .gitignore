@@ -4,6 +4,7 @@ local.properties
 *.log
 .idea/
 .kotlin/
+.DS_Store
 
 # Local notes/plans — not part of the published repo:
 docs/
