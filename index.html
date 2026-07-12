@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wickplot — Compose Multiplatform Candlestick &amp; Trading Chart Library for Kotlin</title>
+<meta name="description" content="Candlestick / trading charts for Compose Multiplatform, drawn directly on a native Compose Canvas — no WebView, no JS bridge, no platform chart library underneath.">
+<meta name="author" content="Earl Savadera">
+<link rel="canonical" href="https://earlisreal.github.io/wickplot/">
+
+<!-- Open Graph -->
+<meta property="og:title" content="wickplot — Compose Multiplatform Candlestick &amp; Trading Chart Library">
+<meta property="og:description" content="Candlestick / trading charts for Compose Multiplatform, drawn directly on a native Compose Canvas — no WebView, no JS bridge, no platform chart library underneath.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://earlisreal.github.io/wickplot/">
+<meta property="og:image" content="https://github.com/user-attachments/assets/215f977d-c31b-400d-94b9-965d645ed24a">
+<meta property="og:site_name" content="wickplot">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="wickplot — Compose Multiplatform Candlestick &amp; Trading Chart Library">
+<meta name="twitter:description" content="Candlestick / trading charts for Compose Multiplatform, drawn directly on a native Compose Canvas — no WebView, no JS bridge, no platform chart library underneath.">
+<meta name="twitter:image" content="https://github.com/user-attachments/assets/215f977d-c31b-400d-94b9-965d645ed24a">
+
+<!-- Favicon: inline candlestick/wick glyph, dark-palette up-green -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cline x1='12' y1='2' x2='12' y2='22' stroke='%234C9E82' stroke-width='2.2'/%3E%3Crect x='7' y='7' width='10' height='10' rx='1.5' fill='%234C9E82'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans+Condensed:wght@600;700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "wickplot",
+  "description": "Candlestick / trading charts for Compose Multiplatform, drawn directly on a native Compose Canvas — no WebView, no JS bridge, no platform chart library underneath.",
+  "url": "https://earlisreal.github.io/wickplot/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "JVM, iOS, Web (wasm)",
+  "author": {
+    "@type": "Person",
+    "name": "Earl Savadera",
+    "url": "https://github.com/earlisreal"
+  },
+  "license": "https://github.com/earlisreal/wickplot/blob/main/LICENSE"
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="#top" class="wordmark nav-wordmark" aria-label="wickplot home">wick<span class="candle" aria-hidden="true"></span>plot</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#quick-start">Quick start</a>
+      <span class="sep-dot">·</span>
+      <a href="https://github.com/earlisreal/wickplot" class="cta">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero wrap">
+    <p class="eyebrow">Open source · Compose Multiplatform</p>
+    <h1 class="wordmark hero-wordmark">wick<span class="candle" aria-hidden="true"></span>plot</h1>
+    <p class="hero-tagline">
+      Candlestick / trading charts for Compose Multiplatform, drawn directly on a
+      native Compose Canvas — no WebView, no JS bridge, no platform chart library
+      underneath.
+    </p>
+
+    <div class="hero-actions">
+      <span class="install-chip">
+        <span class="chip-prompt">$</span>
+        implementation(<span class="str">"io.github.earlisreal:wickplot:0.1.1"</span>)
+      </span>
+      <a class="btn" href="https://github.com/earlisreal/wickplot">View source ↗</a>
+      <a class="btn" href="https://central.sonatype.com/artifact/io.github.earlisreal/wickplot">Maven Central ↗</a>
+    </div>
+
+    <figure class="hero-figure">
+      <span class="figure-tab">ChartColors.Dark</span>
+      <img
+        src="https://github.com/user-attachments/assets/215f977d-c31b-400d-94b9-965d645ed24a"
+        alt="wickplot dark-theme candlestick chart with volume band, buy/sell trade markers, and a crosshair legend"
+        width="1600" height="900" loading="eager">
+    </figure>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Definition</p>
+    <blockquote class="callout">
+      A wick is the thin line above or below a candle's body, marking the bar's
+      high and low.
+    </blockquote>
+  </section>
+
+  <section class="section wrap" id="features">
+    <p class="eyebrow">Features</p>
+    <h2 class="section-title">What it does</h2>
+    <ul class="feature-list">
+      <li>Candlesticks + volume band from any <code>List&lt;Candle&gt;</code> — implement the small <code>Candle</code> interface on your own bar type (zero-copy), or use the bundled <code>OhlcvCandle</code>.</li>
+      <li>Line overlays for host-computed indicators — VWAP, moving averages, band edges (<code>overlays: List&lt;LineOverlay&gt;</code>; per-line colour, stroke width, and optional legend label).</li>
+      <li>Exact-price trade entry/exit markers (<code>PriceMarker</code> diamonds).</li>
+      <li>Crosshair with OHLCV legend, price axis, adaptive time axis (intraday HH:MM / daily MM-DD).</li>
+      <li>Cursor-anchored scroll zoom and drag pan, clamped to the data.</li>
+      <li><code>ChartColors.Dark</code> / <code>ChartColors.Light</code> presets, fully customizable.</li>
+      <li>Trade-centric initial framing via <code>ChartInitialView</code> (calendar or intraday modes).</li>
+      <li>Pure, unit-tested pan/zoom/viewport math; the renderer is exercised by a Skia screenshot harness.</li>
+    </ul>
+
+    <p class="eyebrow" style="margin-top:2.75rem;">Presets</p>
+    <div class="shot-pair">
+      <figure class="shot">
+        <img
+          src="https://github.com/user-attachments/assets/215f977d-c31b-400d-94b9-965d645ed24a"
+          alt="wickplot rendered with the ChartColors.Dark preset"
+          width="1200" height="675" loading="lazy">
+        <figcaption class="shot-caption">ChartColors.Dark</figcaption>
+      </figure>
+      <figure class="shot">
+        <img
+          src="https://github.com/user-attachments/assets/ea669e22-db90-4942-a836-e728928595db"
+          alt="wickplot rendered with the ChartColors.Light preset"
+          width="1200" height="675" loading="lazy">
+        <figcaption class="shot-caption">ChartColors.Light</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Philosophy</p>
+    <p class="pull-quote">
+      wickplot renders what you give it — the Lightweight-Charts philosophy.
+      Indicator values (VWAP, moving averages, …) are computed by your app and
+      passed in as plain LineOverlays; the library never computes market math.
+    </p>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Why not Vico?</p>
+    <h2 class="section-title">Why not Vico?</h2>
+    <p class="prose">
+      Vico is a great general-purpose Compose chart engine and has a candlestick
+      layer, but no built-in trading overlays. wickplot is purpose-built for
+      trade analysis: volume, indicator line overlays, and exact-price trade
+      markers out of the box, with indicator panes on the roadmap.
+    </p>
+  </section>
+
+  <section class="section wrap" id="quick-start">
+    <p class="eyebrow">Quick start</p>
+    <h2 class="section-title">Install</h2>
+
+    <figure class="code-block-figure">
+      <div class="code-block">
+        <div class="code-head"><span>build.gradle.kts</span><span>kotlin</span></div>
+        <pre><code>commonMain.dependencies {
+    <span class="tok-kw">implementation</span>(<span class="tok-str">"io.github.earlisreal:wickplot:0.1.1"</span>)
+}</code></pre>
+      </div>
+    </figure>
+
+    <h2 class="section-title" style="margin-top:2.5rem;">Use it</h2>
+    <figure class="code-block-figure">
+      <div class="code-block">
+        <div class="code-head"><span>Chart.kt</span><span>kotlin</span></div>
+        <pre><code><span class="tok-kw">val</span> bars: List&lt;<span class="tok-type">Candle</span>&gt; = listOf(
+    <span class="tok-type">OhlcvCandle</span>(<span class="tok-type">LocalDateTime</span>(<span class="tok-num">2026</span>, <span class="tok-num">7</span>, <span class="tok-num">1</span>, <span class="tok-num">9</span>, <span class="tok-num">30</span>), open = <span class="tok-num">100.0</span>, high = <span class="tok-num">103.5</span>, low = <span class="tok-num">99.2</span>, close = <span class="tok-num">102.8</span>, volume = <span class="tok-num">120_000</span>),
+    <span class="tok-com">// ...</span>
+)
+
+<span class="tok-type">CandlestickCanvasChart</span>(
+    bars = bars,
+    markers = listOf(<span class="tok-type">PriceMarker</span>(barIndex = <span class="tok-num">12</span>, price = <span class="tok-num">101.25</span>, isBuy = <span class="tok-kw">true</span>)),
+    title = <span class="tok-str">"ACME · D"</span>,
+    colors = <span class="tok-type">ChartColors</span>.Dark,   <span class="tok-com">// or ChartColors.Light</span>
+    overlays = emptyList(),      <span class="tok-com">// indicator lines</span>
+    intraday = <span class="tok-kw">false</span>,            <span class="tok-com">// switches the time-axis format</span>
+)</code></pre>
+      </div>
+      <figcaption class="code-caption">
+        Drag to pan, scroll to zoom (anchored at the cursor), hover for a
+        crosshair with the bar's OHLCV.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Roadmap</p>
+    <h2 class="section-title">Roadmap</h2>
+    <ul class="roadmap-list">
+      <li><span class="tick mono">→</span><span>Stacked sub-panes sharing the X axis (for host-computed RSI / MACD / volume studies).</span></li>
+      <li><span class="tick mono">→</span><span>Android target.</span></li>
+    </ul>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Runs on</p>
+    <div class="platforms">
+      <span class="seg">JVM/Desktop</span><span class="sep">&nbsp;·&nbsp;</span><span class="seg">iOS (arm64, simulatorArm64)</span><span class="sep">&nbsp;·&nbsp;</span><span class="seg">wasmJs</span>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="#top" class="wordmark nav-wordmark" aria-label="wickplot home">wick<span class="candle" aria-hidden="true"></span>plot</a>
+        <p class="prose" style="margin-top:0.9rem; max-width:24rem;">
+          Apache License 2.0. Built for Compose Multiplatform developers who
+          want native trading charts without a WebView.
+        </p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/earlisreal/wickplot">GitHub repo</a></li>
+        <li><a href="https://central.sonatype.com/artifact/io.github.earlisreal/wickplot">Maven Central</a></li>
+        <li><a href="https://earlisreal.github.io/">earlisreal.github.io</a></li>
+        <li><a href="https://earlisreal.github.io/eTape/">eTape</a></li>
+        <li><a href="https://earlisreal.github.io/eJournal/">eJournal</a></li>
+        <li><a href="https://github.com/earlisreal">@earlisreal</a></li>
+      </ul>
+    </div>
+    <div class="footer-meta">
+      <span>© 2026 Earl Savadera</span>
+      <span>Apache License 2.0</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
