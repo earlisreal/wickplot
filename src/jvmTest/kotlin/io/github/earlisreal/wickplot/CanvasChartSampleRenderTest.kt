@@ -65,6 +65,35 @@ class CanvasChartSampleRenderTest {
         assertTrue(intraday.size > 1000, "intraday PNG should have real content")
     }
 
+    @Test
+    fun `render social banner hero`() {
+        // Chunkier candles than the default sample (maxBars 120) so the daily uptrend reads
+        // clearly in the narrower chart panel of the GitHub social banner's split layout.
+        val bars = sampleBars()
+        val window = BarWindow.initial(bars.size, maxBars = 80)
+        val viewport = ChartViewport.fit(bars, window)
+        val vwap = LineOverlay(points = vwapLineFor(bars), label = "VWAP")
+        // Marker indices are relative to the window start so they stay on-screen regardless of
+        // how many bars are visible.
+        val buyIndex = window.startIndex + 20
+        val sellIndex = window.startIndex + 60
+        val markers = listOf(
+            PriceMarker(barIndex = buyIndex, price = bars[buyIndex].low, isBuy = true),
+            PriceMarker(barIndex = sellIndex, price = bars[sellIndex].high, isBuy = false),
+        )
+        val crosshair = Offset(1100f, 480f)
+
+        val outDir = File("build/samples").apply { mkdirs() }
+        val hero = renderPng(740, 640, scale = 2f) {
+            drawCandlestickChart(
+                bars, markers, viewport, ChartColors.Light, it, "ACME · D", crosshair, listOf(vwap),
+            )
+        }
+        File(outDir, "banner-hero-light.png").writeBytes(hero)
+
+        assertTrue(hero.size > 1000, "banner hero PNG should have real content")
+    }
+
     private fun renderPng(width: Int, height: Int, scale: Float, block: DrawScope.(TextMeasurer) -> Unit): ByteArray {
         val pxW = (width * scale).toInt()
         val pxH = (height * scale).toInt()

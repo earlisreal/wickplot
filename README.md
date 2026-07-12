@@ -1,5 +1,7 @@
 # wickplot
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.earlisreal/wickplot)](https://central.sonatype.com/artifact/io.github.earlisreal/wickplot)
+
 Candlestick / trading charts for **Compose Multiplatform**, drawn directly on a native Compose
 `Canvas` — no WebView, no JS bridge, no platform chart library underneath.
 
